@@ -14,6 +14,7 @@
 		D82CD4331D343C1300987919 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D82CD4311D343C1300987919 /* LaunchScreen.storyboard */; };
 		D82CD43B1D3447F400987919 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D82CD43A1D3447F400987919 /* MapKit.framework */; };
 		D82CD43D1D349DC200987919 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = D82CD43C1D349DC200987919 /* Constants.swift */; };
+		D82CD43F1D35726400987919 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D82CD43E1D35726400987919 /* CoreLocation.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +27,7 @@
 		D82CD4341D343C1300987919 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D82CD43A1D3447F400987919 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		D82CD43C1D349DC200987919 /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		D82CD43E1D35726400987919 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -33,6 +35,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D82CD43F1D35726400987919 /* CoreLocation.framework in Frameworks */,
 				D82CD43B1D3447F400987919 /* MapKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -43,6 +46,7 @@
 		D82CD41C1D343C1300987919 = {
 			isa = PBXGroup;
 			children = (
+				D82CD43E1D35726400987919 /* CoreLocation.framework */,
 				D82CD43A1D3447F400987919 /* MapKit.framework */,
 				D82CD4271D343C1300987919 /* CurrentLocationApp */,
 				D82CD4261D343C1300987919 /* Products */,
@@ -103,6 +107,7 @@
 				TargetAttributes = {
 					D82CD4241D343C1300987919 = {
 						CreatedOnToolsVersion = 7.3.1;
+						DevelopmentTeam = NY3FCN8DZ4;
 						SystemCapabilities = {
 							com.apple.BackgroundModes = {
 								enabled = 1;
@@ -265,10 +270,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = CurrentLocationApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.joe.CurrentLocationApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 			};
 			name = Debug;
 		};
@@ -276,10 +284,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = CurrentLocationApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.joe.CurrentLocationApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 			};
 			name = Release;
 		};

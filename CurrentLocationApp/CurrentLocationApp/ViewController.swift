@@ -14,8 +14,8 @@ class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDele
     
     var locationManager : CLLocationManager!
     
-    var currentLatitude : Float = 0.0
-    var currentLongitude : Float = 0.0
+    var currentLatitude : Double = 0
+    var currentLongitude : Double = 0
     var locationName : String = ""
     
     @IBOutlet weak var mapView: MKMapView!
@@ -23,16 +23,22 @@ class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDele
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        self.locationManagerFunction()
+        self.loadDefaults()
+        
+    }
+    
+    func locationManagerFunction() {
+        
         locationManager = CLLocationManager()
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
         locationManager.delegate = self
-    
-    let status = CLLocationManager.authorizationStatus()
         
-    if status == .NotDetermined || status == .Denied || status == .AuthorizedWhenInUse {
-    
-        locationManager.requestAlwaysAuthorization()
-        locationManager.requestWhenInUseAuthorization()
+        let status = CLLocationManager.authorizationStatus()
+        
+        if status == .NotDetermined || status == .Denied || status == .AuthorizedWhenInUse {
+            
+            locationManager.requestWhenInUseAuthorization()
         }
         locationManager.startUpdatingLocation()
         locationManager.startUpdatingHeading()
@@ -42,46 +48,37 @@ class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDele
         mapView.mapType = MKMapType(rawValue: 0)!
         mapView.userTrackingMode = MKUserTrackingMode(rawValue: 2)!
         
-        // LOAD THE VALUE
-//        self.currentLatitude = NSUserDefaults.standardUserDefaults().floatForKey(kLATITUDE)
-//        
-//        self.currentLongitude = NSUserDefaults.standardUserDefaults().floatForKey(kLONGITUDE)
-
     }
     
     @IBAction func addButtonTapped(sender: UIBarButtonItem) {
         
-        self.addPin(40.546655, longitude: -111.954564, titleString: "Home Address", subtitleString: "Street Name")
-        
-        let latitude = 40.546655
-        
-        let longitude = -111.954564
-        
-        let location = CLLocationCoordinate2D(
-            latitude: latitude,
-            longitude: longitude
-        )
-        
-        self.centerMapOnLocation(location)
+        self.addPin(self.currentLatitude, longitude: self.currentLongitude, titleString: self.locationName)
         
         let alert = UIAlertController(title: "Add Pin",
                                       message: "", preferredStyle: .Alert)
-        
         
         let saveAction = UIAlertAction(title: "Save",
                                        style: .Default,
                                        handler: {
                                         (action) in
                                         
-
-                                        
-//                                        if let textField = alert.textFields?.first {
-//                                            
-//                                            if let name = textField.text {
-//                                                print(name)
-//                                                self.currentCity?.name = name
-//                                            }
-//                                        }
+                                        if let textField = alert.textFields?.first {
+                                            
+                                            if let name = textField.text {
+                                                print(name)
+                                                
+                                        self.locationName = name
+                                                
+                                                self.saveDefaults()
+                                                
+                                                dispatch_async(dispatch_get_main_queue(), {
+        
+                                                    self.addPin(self.currentLatitude, longitude: self.currentLongitude, titleString: self.locationName)
+                                                    
+                                                })
+                                                
+                                            }
+                                        }
                                         
         })
         
@@ -104,16 +101,48 @@ class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDele
         }
         
         self.presentViewController(alert, animated: true, completion: nil)
-        
-        // SAVE THE VALUES
-    
-//        NSUserDefaults.standardUserDefaults().setFloat(sender.value, forKey: kLATITUDE)
-//        NSUserDefaults.standardUserDefaults().setFloat(sender.value, forKey: kLONGITUDE)
-//        NSUserDefaults.standardUserDefaults().synchronize()
-        
+
     }
     
-    func addPin(latitude: Double, longitude: Double, titleString: String, subtitleString: String) {
+    func saveDefaults() {
+        
+        // SAVE THE VALUES
+        
+        NSUserDefaults.standardUserDefaults().setDouble(self.currentLatitude, forKey: kLATITUDE)
+        NSUserDefaults.standardUserDefaults().setDouble(self.currentLongitude, forKey: kLONGITUDE)
+        NSUserDefaults.standardUserDefaults().setObject(self.locationName, forKey: kLOCATIONNAME)
+        NSUserDefaults.standardUserDefaults().synchronize()
+   
+    }
+    
+    func loadDefaults() {
+        
+        // LOAD THE VALUE
+        let latitude = NSUserDefaults.standardUserDefaults().doubleForKey(kLATITUDE)
+        
+        let longitude = NSUserDefaults.standardUserDefaults().doubleForKey(kLONGITUDE)
+        
+        if let name = NSUserDefaults.standardUserDefaults().objectForKey(kLOCATIONNAME) as? String {
+            
+            self.locationName = name
+            
+            self.currentLatitude = latitude
+            
+            self.currentLongitude = longitude
+            
+            self.addPin(self.currentLatitude, longitude: self.currentLongitude, titleString: self.locationName)
+            
+            print(self.currentLatitude)
+            
+            print(self.currentLongitude)
+            
+            print(self.locationName)
+            
+        }
+
+    }
+    
+    func addPin(latitude: Double, longitude: Double, titleString: String) {
         
         let location = CLLocationCoordinate2D(
             latitude: latitude,
@@ -123,46 +152,30 @@ class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDele
         let annotation = MKPointAnnotation()
         
         annotation.coordinate = location
-        annotation.title = "Home Address"
-        annotation.subtitle = "South Jordan"
+        annotation.title = titleString
         
-        mapView.addAnnotation(annotation)
+        self.mapView.addAnnotation(annotation)
         
-        centerMapOnLocation(location)
+        self.centerMapOnLocation(location)
+        
+        self.saveDefaults()
     }
     
-    func centerMapOnLocation(location: CLLocationCoordinate2D) {
+    func centerMapOnLocation(centerCoordinate: CLLocationCoordinate2D) {
         
-        let span = MKCoordinateSpanMake(0.1, 0.1)
-        let region = MKCoordinateRegion(center: location, span: span)
-        mapView.setRegion(region, animated: true)
+        let span = MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1)
+        let region = MKCoordinateRegion(center: centerCoordinate, span: span)
+        self.mapView.setRegion(region, animated: true)
     }
     
-//    func mapView(mapView: MKMapView, viewForAnnotation annotation:MKAnnotation) -> MKAnnotationView?
-//    {
-//        if annotation.isKindOfClass(MKPointAnnotation) {
-//            
-//            // 1. Create identifier
-//            let identifier = "MapPin"
-//            
-//            let annotationView = MKAnnotationView(annotation: annotation,reuseIdentifier: identifier)
-//            
-//            annotationView.canShowCallout = true
-//            
-//            let imageView = UIImageView(frame: CGRectMake(0,0,44,44))
-//            imageView.image = UIImage(named: "map")
-//            annotationView.image = imageView.image
-//            
-//            return annotationView
-//        }
-//        
-//        return nil
-//    }
-    
-    func locationManager(manager: CLLocationManager!, didUpdateToLocation newLocation: CLLocation!, fromLocation oldLocation: CLLocation!) {
+    func locationManager(manager: CLLocationManager, didUpdateToLocation newLocation: CLLocation, fromLocation oldLocation: CLLocation) {
         
         print("present location : \(newLocation.coordinate.latitude), \(newLocation.coordinate.longitude)")
         
+        self.currentLatitude = newLocation.coordinate.latitude
+    
+        self.currentLongitude = newLocation.coordinate.latitude
+  
     }
 
 }
